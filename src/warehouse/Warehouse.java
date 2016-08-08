@@ -1,7 +1,7 @@
 package warehouse;
 
-import warehouse.Product;
 
+import com.google.common.collect.Ordering;
 import java.util.*;
 
 
@@ -10,8 +10,9 @@ import java.util.*;
  */
 public class Warehouse {
 
-    private Map<String, Product> warehouse;
-    private Comparator<Product> comparator = new Comparator<Product>() {
+    private Map<String, ProductQuantityPair> warehouse;
+    private static final int DEFAULT_MAX_QUANTITY = 50;
+    private Ordering<Product> byPriceOrdering = new Ordering<Product>() {
         @Override
         public int compare(Product product1, Product product2) {
             if (product1.getPrice() > product2.getPrice()) {
@@ -24,36 +25,35 @@ public class Warehouse {
         }
     };
 
-
     public Warehouse () {
-        warehouse = new LinkedHashMap<>();
+        this.warehouse = new LinkedHashMap<>();
+    }
+
+    public Warehouse (Product ... product) {
+        this.warehouse = new LinkedHashMap<>();
+        for (Product product1 : product) {
+            warehouse.put(product1.getName(), new ProductQuantityPair(product1, DEFAULT_MAX_QUANTITY));
+        }
     }
 
     /**
-     * Adds new protduct to the warehouse
+     * Adds new product to the warehouse
      * @param product Product product to be added
      */
     public void add(Product product) {
-        if (warehouse.containsKey(product.getName())) {
-            int newQuantity = warehouse.get(product.getName()).getQuantity() + product.getQuantity();
-            if (newQuantity > product.getMaxQuantity()) {
-                throw new MaximumQuantityException("Max quantity reached can't add");
-            }
-            warehouse.get(product.getName()).setQuantity(newQuantity);
-            return;
+        if( !warehouse.containsKey(product.getName()) ) {
+           warehouse.put(product.getName(), new ProductQuantityPair(product , DEFAULT_MAX_QUANTITY));
+           return;
         }
-        warehouse.put(product.getName(), product);
+        int newQuantity = warehouse.get(product.getName()).getProduct().getQuantity() + product.getQuantity();
+        if (newQuantity > warehouse.get(product.getName()).getMaxQuantity()) {
+            throw new MaximumQuantityException("Maximum quantity reached. Can't add");
+        }
+        warehouse.get(product.getName()).getProduct().setQuantity(newQuantity);
     }
 
-    /**
-     * Gets current size of warehouse container
-     * @return int the size of warehouse
-     */
-    public int size() {
-        return warehouse.size();
-    }
 
-    public Map<String,Product> getWarehouse() {
+    public Map<String,ProductQuantityPair> inventory() {
         return warehouse;
     }
 
@@ -63,11 +63,11 @@ public class Warehouse {
      * @param quantity int Quantity of the product to be sold
      */
     public void sell(Product product, int quantity) {
-        int newQuantity = warehouse.get(product.getName()).getQuantity() - quantity;
-        if ( newQuantity < 0) {
-            throw new OutOfStockException("There is not enough amount");
+        int newQuantity = warehouse.get(product.getName()).getProduct().getQuantity() - quantity;
+        if (newQuantity < 0) {
+            throw new OutOfStockException("This product is out of stock");
         }
-        warehouse.get(product.getName()).setQuantity(newQuantity);
+        warehouse.get(product.getName()).getProduct().setQuantity(newQuantity);
     }
 
     /**
@@ -75,8 +75,14 @@ public class Warehouse {
      * @return List sorted list of warehouse items
      */
     public List<Product> sort() {
-        List<Product> sorted = new ArrayList<>(warehouse.values());
-        Collections.sort(sorted, comparator);
-        return sorted;
+        return byPriceOrdering.immutableSortedCopy(productList());
     }
+
+
+    private List<Product> productList () {
+        List<Product> list = new ArrayList<>();
+        warehouse.values().stream().forEach(productQuantityPair -> list.add(productQuantityPair.getProduct()));
+        return list;
+    }
+
 }

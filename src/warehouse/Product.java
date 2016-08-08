@@ -10,16 +10,15 @@ public class Product {
     private final String name;
     private double price;
     private int quantity;
-    private int maxQuantity;
 
-    public Product(String name, int quantity,double price, int max) {
+
+    public Product (String name, int quantity, double price) {
         this.name = name;
         this.quantity = quantity;
-        this.maxQuantity = max;
         this.price = price;
     }
 
-    public Product(String name, Currency price, int quantity) {
+    public Product (String name, int quantity) {
         this.name = name;
         this.quantity = quantity;
     }
@@ -28,19 +27,15 @@ public class Product {
         return name;
     }
 
-    public void setQuantity(int newQuantity) {
+    public void setQuantity (int newQuantity) {
         this.quantity = newQuantity;
     }
 
-    public int getQuantity() {
+    public int getQuantity () {
         return quantity;
     }
 
-    public int getMaxQuantity() {
-        return maxQuantity;
-    }
-
-    public double getPrice() {
+    public double getPrice () {
         return price;
     }
 }
