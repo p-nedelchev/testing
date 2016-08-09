@@ -14,41 +14,32 @@ import java.util.Arrays;
  * @author Petar Nedelchev <peter.krasimirov@gmail.com>
  */
 public class ArrayTest {
-
-
-    @Test
-    public void testMinElement () {
-        assertThat(new Array(new int[]{7, 10, 6, 3, 8, 28, 2}).getMinElement(), is(equalTo(2)));
-    }
+    private Array array = new Array(new int[]{7, 10, 6, 3, 8, 28, 2});
 
     @Test
-    public void testSum () {
-       assertThat(new Array(new int[]{7, 10, 6, 3, 8, 28, 2}).getSum(), is(equalTo(64)));
+    public void getMinElement () {
+        int subject = array.getMinElement();
+        assertThat( subject, is(equalTo( 2 )));
     }
 
     @Test
-    public void testSort () {
-        assertThat(new Array(new int[]{7, 10, 6, 3, 8, 28, 2}).quickSort(), is(equalTo(new int[]{2, 3, 6, 7, 8, 10, 28})));
+    public void getSum () {
+        int subject = array.getSum();
+        assertThat( subject, is(equalTo( 64 )));
     }
 
     @Test
-    public void testReverse () {
-       assertThat(new Array(new int[]{7, 10, 6, 3, 8, 28, 2}).reverse(), is(equalTo(new int[]{2, 28, 8, 3, 6, 10, 7})));
+    public void sortArray () {
+        int [] subject = array.quickSort();
+        int [] expected = new int[]{2, 3, 6, 7, 8, 10, 28};
+        assertThat( subject, is(equalTo( expected )));
     }
 
-    @Test(expected = NullPointerException.class)
-    public void testNull () {
-        int result = new Array(null).getMinElement();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void testNullSum () {
-        int result = new Array(null).getSum();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void testNullReverse () {
-        new Array(null).reverse();
+    @Test
+    public void reverseArray () {
+        int [] subject = array.reverse();
+        int [] expected = new int[]{2, 28, 8, 3, 6, 10, 7};
+        assertThat( subject, is(equalTo( expected )));
     }
 
 }

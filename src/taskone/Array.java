@@ -15,8 +15,8 @@ public class Array {
      * Returns the minimal element in an array
      * @return minimal element in array
      */
-    public int getMinElement () {
-        int min = array[0];
+    public Integer getMinElement () {
+        Integer min = Integer.MAX_VALUE;
         for(int i = 0; i < array.length; i++) {
             if( array[i] < min ){
                 min = array[i];

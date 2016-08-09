@@ -23,4 +23,12 @@ public class ProductQuantityPair {
     public void setMaxQuantity(Integer maxQuantity) {
         this.maxQuantity = maxQuantity;
     }
+
+    public int productQuantity () {
+        return this.product.getQuantity();
+    }
+
+    public void productQuantityEdit (int qunatity) {
+        this.product.setQuantity(qunatity);
+    }
 }

@@ -12,18 +12,18 @@ public class SumatorTest {
     private Sumator sumator = new Sumator();
 
     @Test
-    public void testSum () {
+    public void sum () {
         int result = sumator.sum(5, 15);
         assertEquals(20, result, 0);
     }
 
     @Test(expected = NumberFormatException.class)
-    public void incorectInputTest () {
+    public void incorrectInput () {
         int result = sumator.sum("5", "c");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void nullExceptionTest () {
+    public void illegalInput () {
         int result = sumator.sum(null, "15");
     }
 

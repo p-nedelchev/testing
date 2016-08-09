@@ -45,11 +45,11 @@ public class Warehouse {
            warehouse.put(product.getName(), new ProductQuantityPair(product , DEFAULT_MAX_QUANTITY));
            return;
         }
-        int newQuantity = warehouse.get(product.getName()).getProduct().getQuantity() + product.getQuantity();
+        int newQuantity = warehouse.get(product.getName()).productQuantity() + product.getQuantity();
         if (newQuantity > warehouse.get(product.getName()).getMaxQuantity()) {
             throw new MaximumQuantityException("Maximum quantity reached. Can't add");
         }
-        warehouse.get(product.getName()).getProduct().setQuantity(newQuantity);
+        warehouse.get(product.getName()).productQuantityEdit(newQuantity);
     }
 
 
@@ -63,11 +63,11 @@ public class Warehouse {
      * @param quantity int Quantity of the product to be sold
      */
     public void sell(Product product, int quantity) {
-        int newQuantity = warehouse.get(product.getName()).getProduct().getQuantity() - quantity;
+        int newQuantity = warehouse.get(product.getName()).productQuantity() - quantity;
         if (newQuantity < 0) {
             throw new OutOfStockException("This product is out of stock");
         }
-        warehouse.get(product.getName()).getProduct().setQuantity(newQuantity);
+        warehouse.get(product.getName()).productQuantityEdit(newQuantity);
     }
 
     /**

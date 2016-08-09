@@ -28,7 +28,7 @@ public class WarehouseTest {
     }
 
     @Test(expected = MaximumQuantityException.class)
-    public void maxQuantityException () {
+    public void exceedingMaxQuantity () {
         Warehouse warehouse = new Warehouse();
         Product apple = new Product("Apple", 20, 1.23);
         warehouse.add(apple);
@@ -46,7 +46,7 @@ public class WarehouseTest {
     }
 
     @Test(expected = OutOfStockException.class)
-    public void productOutOfStock () {
+    public void sellUnavailableProduct () {
         Warehouse warehouse = new Warehouse();
         Product apple = new Product("Apple", 20, 1.23);
         warehouse.add(apple);
