@@ -1,41 +1,34 @@
 package warehouse;
 
-import java.util.Currency;
+
+import com.google.common.base.Objects;
 
 /**
  * @author Petar Nedelchev <peter.krasimirov@gmail.com>
  */
 public class Product {
 
-    private final String name;
-    private double price;
-    private int quantity;
+    public final String name;
+    public final Double price;
 
 
-    public Product (String name, int quantity, double price) {
+
+    public Product (String name, Double price) {
         this.name = name;
-        this.quantity = quantity;
         this.price = price;
     }
 
-    public Product (String name, int quantity) {
-        this.name = name;
-        this.quantity = quantity;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Product)) return false;
+        Product product = (Product) o;
+        return Double.compare(product.price, price) == 0 &&
+                Objects.equal(name, product.name);
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setQuantity (int newQuantity) {
-        this.quantity = newQuantity;
-    }
-
-    public int getQuantity () {
-        return quantity;
-    }
-
-    public double getPrice () {
-        return price;
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(name, price);
     }
 }

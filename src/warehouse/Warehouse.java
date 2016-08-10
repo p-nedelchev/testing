@@ -10,15 +10,16 @@ import java.util.*;
  */
 public class Warehouse {
 
-    private Map<String, ProductQuantityPair> warehouse;
-    private static final int DEFAULT_MAX_QUANTITY = 50;
+    private Map<Product, QuantitiesPair> warehouse;
+    private static final Integer DEFAULT_QUANTITY = 0;
+    private static final Integer DEFAULT_MAX_QUANTITY = 50;
     private Ordering<Product> byPriceOrdering = new Ordering<Product>() {
         @Override
         public int compare(Product product1, Product product2) {
-            if (product1.getPrice() > product2.getPrice()) {
+            if (product1.price > product2.price) {
                 return 1;
             }
-            if (product1.getPrice() < product2.getPrice()) {
+            if (product1.price < product2.price) {
                 return -1;
             }
             return 0;
@@ -29,60 +30,40 @@ public class Warehouse {
         this.warehouse = new LinkedHashMap<>();
     }
 
-    public Warehouse (Product ... product) {
+    public Warehouse (Product ... products) {
         this.warehouse = new LinkedHashMap<>();
-        for (Product product1 : product) {
-            warehouse.put(product1.getName(), new ProductQuantityPair(product1, DEFAULT_MAX_QUANTITY));
+        for (Product product : products) {
+            warehouse.put(product, new QuantitiesPair(DEFAULT_QUANTITY, DEFAULT_MAX_QUANTITY));
         }
     }
 
-    /**
-     * Adds new product to the warehouse
-     * @param product Product product to be added
-     */
-    public void add(Product product) {
-        if( !warehouse.containsKey(product.getName()) ) {
-           warehouse.put(product.getName(), new ProductQuantityPair(product , DEFAULT_MAX_QUANTITY));
-           return;
+    public void  add (Product product, Integer quantity ) {
+        if ( !warehouse.containsKey(product)) {
+            warehouse.put(product, new QuantitiesPair(quantity, DEFAULT_MAX_QUANTITY));
+            return;
         }
-        int newQuantity = warehouse.get(product.getName()).productQuantity() + product.getQuantity();
-        if (newQuantity > warehouse.get(product.getName()).getMaxQuantity()) {
-            throw new MaximumQuantityException("Maximum quantity reached. Can't add");
+        Integer newQuantity = warehouse.get(product).quantity + quantity;
+        if (warehouse.get(product).maxQuantity < newQuantity) {
+            throw new MaximumQuantityException("Maximum quantity exceeded");
         }
-        warehouse.get(product.getName()).productQuantityEdit(newQuantity);
+        warehouse.get(product).quantity = newQuantity;
     }
 
-
-    public Map<String,ProductQuantityPair> inventory() {
-        return warehouse;
+    public Map<Product, QuantitiesPair> inventory () {
+        return this.warehouse;
     }
 
-    /**
-     * Sells a product from warehouse
-     * @param product Product product to be sold
-     * @param quantity int Quantity of the product to be sold
-     */
-    public void sell(Product product, int quantity) {
-        int newQuantity = warehouse.get(product.getName()).productQuantity() - quantity;
-        if (newQuantity < 0) {
+    public void sell (Product product, Integer quantity) {
+        Integer newQuantity = warehouse.get(product).quantity - quantity;
+        if(newQuantity < 0) {
             throw new OutOfStockException("This product is out of stock");
         }
-        warehouse.get(product.getName()).productQuantityEdit(newQuantity);
+        warehouse.get(product).quantity = newQuantity;
     }
 
-    /**
-     * Sorts warehouse items by price
-     * @return List sorted list of warehouse items
-     */
-    public List<Product> sort() {
-        return byPriceOrdering.immutableSortedCopy(productList());
-    }
-
-
-    private List<Product> productList () {
-        List<Product> list = new ArrayList<>();
-        warehouse.values().stream().forEach(productQuantityPair -> list.add(productQuantityPair.getProduct()));
-        return list;
+    public List<Product> sortByPrice () {
+        List<Product> sorted = new ArrayList<>(warehouse.keySet());
+        return byPriceOrdering.immutableSortedCopy(sorted);
     }
 
 }

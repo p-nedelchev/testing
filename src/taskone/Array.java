@@ -16,7 +16,10 @@ public class Array {
      * @return minimal element in array
      */
     public Integer getMinElement () {
-        Integer min = Integer.MAX_VALUE;
+        if (array.length == 0) {
+            throw new IllegalArgumentException("Empty Array");
+        }
+        int min = array[0];
         for(int i = 0; i < array.length; i++) {
             if( array[i] < min ){
                 min = array[i];
@@ -30,6 +33,9 @@ public class Array {
      * @return int the sum of the elements of array
      */
     public int getSum() {
+        if (array.length == 0) {
+            throw new IllegalArgumentException("Empty Array");
+        }
         int sum = 0;
         for(int i = 0; i < array.length; i++) {
             sum += array[i];

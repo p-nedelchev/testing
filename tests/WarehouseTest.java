@@ -3,7 +3,7 @@ import warehouse.MaximumQuantityException;
 import warehouse.OutOfStockException;
 import warehouse.Product;
 import warehouse.Warehouse;
-
+import java.util.List;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
@@ -11,56 +11,56 @@ import static org.junit.Assert.*;
  * @author Petar Nedelchev <peter.krasimirov@gmail.com>
  */
 public class WarehouseTest {
-
-
     @Test
     public void addNotExistingProduct () {
         Warehouse warehouse = new Warehouse();
-        warehouse.add(new Product("Apple", 10, 1.23));
+        Product product = new Product("Apple", 1.23);
+        warehouse.add(product, 25);
         assertThat(warehouse.inventory().size(), is(equalTo(1)));
     }
 
     @Test
     public void addExistingProduct () {
-        Warehouse warehouse = new Warehouse(new Product("Apple", 10, 1.23));
-        warehouse.add(new Product("Apple", 23));
-        assertThat(warehouse.inventory().get("Apple").getProduct().getQuantity(), is(equalTo(33)));
+        Product product = new Product("Pear", 1.78);
+        Warehouse warehouse = new Warehouse(product);
+        warehouse.add(product, 15);
+        assertThat(warehouse.inventory().get(product).quantity, is(equalTo(15)));
     }
 
     @Test(expected = MaximumQuantityException.class)
-    public void exceedingMaxQuantity () {
+    public void exceedMaxQuantity () {
         Warehouse warehouse = new Warehouse();
-        Product apple = new Product("Apple", 20, 1.23);
-        warehouse.add(apple);
-        Product apple2 = new Product("Apple", 32);
-        warehouse.add(apple2);
+        Product pear = new Product("Pear", 1.78);
+        warehouse.add(pear, 15);
+        warehouse.add(pear, 40);
     }
 
     @Test
-    public void sellProduct () {
+    public void sell () {
         Warehouse warehouse = new Warehouse();
-        Product apple = new Product("Apple", 20, 1.23);
-        warehouse.add(apple);
-        warehouse.sell(apple, 8);
-        assertThat(warehouse.inventory().get(apple.getName()).getProduct().getQuantity(), is(equalTo(12)));
+        Product orange = new Product("Orange", 2.50);
+        warehouse.add(orange, 25);
+        warehouse.sell(orange, 10);
+        assertThat(warehouse.inventory().get(orange).quantity, is(equalTo(15)));
     }
 
     @Test(expected = OutOfStockException.class)
     public void sellUnavailableProduct () {
-        Warehouse warehouse = new Warehouse();
-        Product apple = new Product("Apple", 20, 1.23);
-        warehouse.add(apple);
-        warehouse.sell(apple, 21);
+        Product grape = new Product("Grape", 0.89);
+        Warehouse warehouse = new Warehouse(grape);
+        warehouse.sell(grape, 10);
     }
 
     @Test
-    public void sortProductsByPrice () {
-        Product apple = new Product("Apple", 20, 1.23);
-        Product pear  = new Product("Pear", 10, 1.98);
-        Product watermelon = new Product("Watermelon", 6, 0.48);
-        Product orange = new Product("Orange", 15, 2.35);
-        Warehouse warehouse = new Warehouse(apple, pear, watermelon, orange);
-        assertThat(warehouse.sort().toArray(), is(equalTo(new Product []{watermelon, apple, pear, orange})));
+    public void sortedByPrice () {
+        Product plum = new Product("Plum", 2.35);
+        Product banana = new Product("Banana", 2.20);
+        Product lemon = new Product("Lemon", 5.80);
+        Product watermelon = new Product("Watermelon", 0.43);
+        Product apple = new Product("Apple", 1.23);
+        Warehouse warehouse = new Warehouse(plum, banana, lemon, watermelon, apple);
+        List<Product> sorted = warehouse.sortByPrice();
+        Product [] expected = new Product[]{watermelon, apple, banana, plum, lemon};
+        assertThat(sorted.toArray(), is(equalTo(expected)));
     }
-
 }
